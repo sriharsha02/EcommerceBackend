@@ -57,8 +57,7 @@ exports.getCart = (req, res, next) => {
   req.user
     .getCart()
     .then(cart => {
-      return cart
-        .getProducts()
+      return cart.getProducts()
         .then(products => {
           res.json({products, success:true})
           // res.render('shop/cart', {
@@ -73,33 +72,45 @@ exports.getCart = (req, res, next) => {
 };
 
 exports.postCart = (req, res, next) => {
-  const prodId = req.body.productId;
+  console.log('I am in post cart',req.body)
+  const prodId = req.body.id;
+  console.log(prodId+"=prodId")
   let fetchedCart;
   let newQuantity = 1;
   req.user
     .getCart()
     .then(cart => {
       fetchedCart = cart;
-      return cart.getProducts({ where: { id: prodId } });
+      prods = cart.getProducts({ where: { id: prodId } })
+      
+      return prods;
     })
     .then(products => {
+      console.log(products.length)
       let product;
       if (product) {
         const oldQuantity = product.cartItem.quantity;
         newQuantity = oldQuantity + 1;
+        
         return product;
       }
+      console.log(prodId)
       return Product.findByPk(prodId);
     })
     .then(product => {
-      return fetchedCart.addProduct(product, {
+      console.log(product);
+      const quant = fetchedCart.addProduct(product, {
         through: { quantity: newQuantity }
       });
+      
+      return quant;
     })
     .then(() => {
+      
       res.status(200).json({success: true, message: 'Successfully added the product'});
     })
     .catch(err =>{
+      console.log(err)
       res.status(500).json({success: false, message: 'Error Occured'});
 
     })
@@ -110,11 +121,14 @@ exports.postCartDeleteProduct = (req, res, next) => {
   req.user
     .getCart()
     .then(cart => {
-      return cart.getProducts({ where: { id: prodId } });
+      const getProd = cart.getProducts({ where: { id: prodId } });
+      return getProd;
     })
     .then(products => {
       const product = products[0];
-      return product.cartItem.destroy();
+      const destroy =  product.cartItem.destroy();
+      console.log(destroy);
+      return destroy;
     })
     .then(result => {
       res.redirect('/cart');
@@ -128,6 +142,7 @@ exports.postOrder = (req, res, next) => {
     .getCart()
     .then(cart => {
       fetchedCart = cart;
+
       return cart.getProducts();
     })
     .then(products => {

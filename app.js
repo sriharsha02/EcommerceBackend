@@ -24,9 +24,11 @@ const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
 app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
+  // console.log(req.body)
   User.findByPk(1)
     .then(user => {
       req.user = user;
@@ -69,7 +71,7 @@ sequelize
     return user.createCart();
   })
   .then(cart => {
-    app.listen(3000);
+    app.listen(3001);
   })
   .catch(err => {
     console.log(err);
