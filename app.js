@@ -1,8 +1,14 @@
 const path = require('path');
-const cors = require('cors')
+const cors = require('cors');
+require('dotenv').config()
+
+
+
 
 const express = require('express');
 const bodyParser = require('body-parser');
+
+const app = express();
 
 const errorController = require('./controllers/error');
 const sequelize = require('./util/database');
@@ -13,7 +19,7 @@ const CartItem = require('./models/cart-item');
 const Order = require('./models/order');
 const OrderItem = require('./models/order-item');
 
-const app = express();
+
 
 app.use(cors())
 
